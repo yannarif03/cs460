@@ -64,6 +64,76 @@ public class InsertRow {
          * to do some of the work (e.g., to fill in the offsets array
          * with the appropriate offsets).
          */
+	    Column PriCol=this.table.primaryKeyColumn();
+	    int primInd=PriCol.getIndex();
+	    if(PriCol==null){
+		    //do something
+	    }else{
+		    int Type=PriCol.getType();
+		    switch (Type){
+		    case 0:
+			    //int case
+			    this.keyBuffer.writeInt((int)this.columnVals[primInd]);
+			    break;
+		    case 1:
+			    //real case
+			    this.keyBuffer.writeDouble((double)this.columnVals[primInd]);
+			    break;
+		    case 2:
+			    //char case
+			    this.keyBuffer.writeBytes((String)this.columnVals[primInd]);
+			    break;
+		    case 3:
+			    //varchar case
+			    this.keyBuffer.writeBytes((String)this.columnVals[primInd]);
+			    break;
+			    
+		    default:
+			    System.out.println("#ERROR# primary key type wrong");
+		    }
+	    }
+	    int i;
+	    int offrunner=this.offsets.length*2;
+	    for(i=0;i<columnVals.length;i++){
+		    if(i==primInd){
+			    offsets[i]=-2;
+		    }else if(columnVals[i]==null){
+			    offsets[i]=-1;
+		    }else{
+			    offsets[i]=offrunner;
+			    Column col=table.getColumn(i);
+			    int type=col.getType();
+			    switch(type){
+			    case 0:
+				    offrunner+=4;
+			    case 1:
+				    offrunner+=8;
+			    default:
+				    offrunner+=((String)columnVals[i]).length();
+			    }
+		    }
+	    }
+	    offsets[i+1]=offrunner;
+	    for(i=0;i<offsets.length;i++){
+		    valueBuffer.writeShort(offsets[i]);
+	    }
+	    for(i=0;i<columnVals.length;i++){
+		    if(columnVals[i]!=null&&i!=primInd){
+			    Column col=table.getColumn(i);
+			    int type=col.getType();
+			    switch(type){
+			    case 0:
+				    valueBuffer.writeInt((int)columnVals[i]);
+				    break;
+			    case 1:
+				    valueBuffer.writeDouble((double)columnVals[i]);
+				    break;
+			    default:
+				    valueBuffer.writeBytes((String)columnVals[i]);
+			    }
+
+		    }
+	    }		    
     }
         
     /**

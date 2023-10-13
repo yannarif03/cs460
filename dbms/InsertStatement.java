@@ -64,7 +64,23 @@ public class InsertStatement extends SQLStatement {
              * PS 2: Add code below to perform the actual insertion, 
              * and to print the appropriate message after it has occurred.
              */
-            
+	    RowOutput keybuffer = row.getKeyBuffer();
+	    RowOutput valueBuffer = row.getValueBuffer();
+
+	    byte[] bytes = keybuffer.getBufferBytes();
+	    int numBytes = keybuffer.getBufferLength();
+	    DatabaseEntry key = new DatabaseEntry(bytes, 0, numBytes);
+
+	    bytes = valueBuffer.getBufferBytes();
+	    numBytes = valueBuffer.getBufferLength();
+	    DatabaseEntry value = new DatabaseEntry(bytes, 0, numBytes);
+
+	    Database db = table.getDB();
+	    OperationStatus ret = db.putNoOverwrite(null, key, value);
+
+	    if (ret == OperationStatus.KEYEXIST) {
+		    throw new Exception("A key already exists!");
+	    }
             
         } catch (Exception e) {
             String errMsg = e.getMessage();
