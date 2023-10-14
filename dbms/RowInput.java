@@ -34,6 +34,10 @@ public class RowInput {
         this.dataIn.mark(0);
         this.currentOffset = 0;
     }
+
+    public byte[] getBytes(){
+	return this.bytes;
+    }
     
     /*
      * Checks the validity of an offset specified by the user,

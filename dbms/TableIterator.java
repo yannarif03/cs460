@@ -217,7 +217,41 @@ public class TableIterator {
          * PS 2: replace the following return statement with your 
          * implementation of the rest of this method.
          */
-        return null;
+	int type=col.getType();
+	int ind=col.getIndex();
+	Object x;
+	if(col.isPrimaryKey()){
+	    RowInput keyIn=new RowInput(this.key.getData());
+	    switch(type){
+	    case 0:
+		x=keyIn.readNextInt();
+		break;
+	    case 1:
+		x=keyIn.readNextDouble();
+		break;
+	    default:
+		x=keyIn.readNextBytes(keyIn.getBytes().length);
+	    }
+	    return x;
+	}
+	RowInput valIn=new RowInput(this.value.getData());
+	
+	short o = valIn.readShortAtOffset(2*ind);
+	if(o==-1){
+	    return null;
+	}
+	switch(type){
+	case 0:
+	    x = valIn.readIntAtOffset(o);
+	    break;
+	case 1:
+	    x = valIn.readDoubleAtOffset(o);
+	    break;
+	default:
+	    short end = valIn.readNextShort();
+	    x = valIn.readBytesAtOffset(o,end-o);
+	}
+	return x;
     }
     
     /**
