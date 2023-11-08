@@ -230,7 +230,7 @@ public class TableIterator {
 		x=keyIn.readNextDouble();
 		break;
 	    default:
-		x=keyIn.readNextBytes(keyIn.getBytes().length);
+		x=keyIn.readNextBytes(this.key.getSize());
 	    }
 	    return x;
 	}

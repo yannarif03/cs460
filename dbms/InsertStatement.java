@@ -80,6 +80,8 @@ public class InsertStatement extends SQLStatement {
 
 	    if (ret == OperationStatus.KEYEXIST) {
 		    throw new Exception("A key already exists!");
+	    }else{
+		System.out.println("Added 1 row to "+table.getName()+".");
 	    }
             
         } catch (Exception e) {
